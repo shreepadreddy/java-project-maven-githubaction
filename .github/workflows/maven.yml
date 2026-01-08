@@ -26,5 +26,16 @@ deploy:
     needs: build
 
     steps:
+      - name: Download WAR artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: myapp
+
+      - name: Deploy to Tomcat
+        run: |
+          WAR_FILE=$(ls *.war)
+          echo "Deploying $WAR_FILE to Tomcat..."
+          curl --upload-file "$WAR_FILE" \
+          "http://${{ secrets.TOMCAT_USER }}:${{ secrets.TOMCAT_PASSWORD }}@${{ secrets.TOMCAT_HOST }}/manager/text/deploy?path=/myapp&update=true"
 
 
